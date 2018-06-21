@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
 
 import akka.Done;
+import lombok.extern.slf4j.Slf4j;
 import org.example.allibilli.hello.impl.HelloCommand.Hello;
 import org.example.allibilli.hello.impl.HelloCommand.UseGreetingMessage;
 import org.example.allibilli.hello.impl.HelloEvent.GreetingMessageChanged;
@@ -29,6 +30,7 @@ import org.example.allibilli.hello.impl.HelloEvent.GreetingMessageChanged;
  * This entity defines one event, the {@link GreetingMessageChanged} event,
  * which is emitted when a {@link UseGreetingMessage} command is received.
  */
+@Slf4j
 public class HelloEntity extends PersistentEntity<HelloCommand, HelloEvent, HelloState> {
 
   /**
@@ -58,7 +60,7 @@ public class HelloEntity extends PersistentEntity<HelloCommand, HelloEvent, Hell
     // GreetingMessageChanged event
     ctx.thenPersist(new GreetingMessageChanged(entityId(), cmd.message),
         // Then once the event is successfully persisted, we respond with done.
-        evt -> ctx.reply(Done.getInstance())));
+        evt -> { ctx.reply(Done.getInstance()); log.info("Data Send");}));
 
     /*
      * Event handler for the GreetingMessageChanged event.

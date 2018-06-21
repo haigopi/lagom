@@ -12,6 +12,8 @@ import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
 import java.util.Optional;
 
 import javax.inject.Inject;
+
+import lombok.extern.slf4j.Slf4j;
 import org.example.allibilli.hello.api.GreetingMessage;
 import org.example.allibilli.hello.api.HelloService;
 import org.example.allibilli.hello.impl.HelloCommand.*;
@@ -19,6 +21,7 @@ import org.example.allibilli.hello.impl.HelloCommand.*;
 /**
  * Implementation of the HelloService.
  */
+@Slf4j
 public class HelloServiceImpl implements HelloService {
 
   private final PersistentEntityRegistry persistentEntityRegistry;
@@ -57,7 +60,7 @@ public class HelloServiceImpl implements HelloService {
 
       // Load the event stream for the passed in shard tag
       persistentEntityRegistry.eventStream(tag, offset).map(eventAndOffset -> {
-
+        log.info("Streaming....");
       // Now we want to convert from the persisted event to the published event.
       // Although these two events are currently identical, in future they may
       // change and need to evolve separately, by separating them now we save
@@ -70,11 +73,13 @@ public class HelloServiceImpl implements HelloService {
           messageChanged.getName(), messageChanged.getMessage()
         );
       } else {
+        log.error("Streaming....ERROR");
         throw new IllegalArgumentException("Unknown event: " + eventAndOffset.first());
       }
 
         // We return a pair of the translated event, and its offset, so that
         // Lagom can track which offsets have been published.
+        log.error("Streaming....{}, {}", eventToPublish, eventAndOffset.second());
         return Pair.create(eventToPublish, eventAndOffset.second());
       })
     );
